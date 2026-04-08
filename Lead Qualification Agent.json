@@ -1,0 +1,369 @@
+{
+  "name": "Lead Qualification Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "ייעוץ ראשוני - אוטומציות AI",
+        "formDescription": "נא למלא את הפרטים והסוכן החכם שלנו יחזור אלייך",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "שם מלא",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "אימייל",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "במה נוכל לעזור?",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "ניהול לידים אוטומטי"
+                  },
+                  {
+                    "option": "סוכן חכם לוואטסאפ"
+                  },
+                  {
+                    "option": "קביעת תורים אוטומטית"
+                  },
+                  {
+                    "option": "סוכני AI מתקדמים"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "ספרי לנו קצת על הצורך העסקי",
+              "fieldType": "textarea"
+            }
+          ]
+        },
+        "options": {
+          "buttonLabel": "שלח פנייה"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        96,
+        -48
+      ],
+      "id": "d3ef696f-f1fa-4b52-ab0f-66111821e234",
+      "name": "On form submission",
+      "webhookId": "6997b522-af77-4c8f-b7c6-be336b24da44"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a Lead Qualification Agent for \"AI Automations\", a company specializing in AI agents, workflow automation, and business process optimization.\n\nYour task is to analyze incoming inquiries and classify them for the sales team.\n\nINPUT DATA:\n- Customer Name: {{ $json['שם מלא'] }}\n- Requested Service: {{ $json['במה נוכל לעזור?'] }}\n- Message: {{ $json['ספרי לנו קצת על הצורך העסקי'] }}\n\nEVALUATION LOGIC:\nScore 0-1: Irrelevant inquiries. This includes personal errands (e.g., \"I want to book a bank appointment for myself\"), spam, or gibberish. Insight: \"Personal/Non-business request\".\n\nScore 2-5: Business-related but vague or low-tech (e.g., \"I need a simple contact form\"). Insight: \"Basic automation\".\n\nScore 6-8: Relevant B2B needs like WhatsApp Lead Agents, Lead Management, or automated booking systems for a business. Insight: \"Core service match\".\n\nScore 9-10: High-intent B2B requests with technical depth, urgency, or mentions of specific business pain points (e.g., \"I'm losing 30% of leads due to slow response, need a WhatsApp AI agent connected to my CRM\"). Insight: \"High-value B2B Lead\".\n\nSTRICT OUTPUT RULES:\n- Return ONLY a valid JSON object.\n- Do NOT include markdown formatting.\n- Do NOT wrap the JSON in backticks (e.g., no ```json).\n- Do NOT add explanations before or after the JSON.\n- Do NOT invent missing details.\n- Ensure valid JSON syntax with no trailing commas.\n- \"summary\" and \"suggested_reply\" must be in Hebrew.\n- \"insight\" must be in English.\n\nJSON STRUCTURE:\n{\n  \"summary\": \"One sentence summary of the request in Hebrew.\",\n  \"score\": Integer (0-10),\n  \"insight\": \"Technical recommendation (n8n, SQL, Python, or AI) in English.\",\n  \"suggested_reply\": \"Short, professional WhatsApp reply in Hebrew.\"\n}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        320,
+        -48
+      ],
+      "id": "001701d4-5632-4b98-a4cb-7abdefcee1ad",
+      "name": "AI Agent",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        192,
+        176
+      ],
+      "id": "840ee2c7-378c-4262-99c9-77a4113f300b",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "fPeNIhjaQkuZocl1",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"summary\": {\n      \"type\": \"string\",\n      \"description\": \"A concise one-sentence summary of the user's request, in Hebrew.\"\n    },\n    \"score\": {\n      \"type\": \"integer\",\n      \"minimum\": 0,\n      \"maximum\": 10,\n      \"description\": \"A lead quality score from 0 to 10.\"\n    },\n    \"insight\": {\n      \"type\": \"string\",\n      \"description\": \"Technical recommendation in English.\"\n    },\n    \"suggested_reply\": {\n      \"type\": \"string\",\n      \"description\": \"Professional WhatsApp reply in Hebrew.\"\n    }\n  },\n  \"required\": [\"summary\", \"score\", \"insight\", \"suggested_reply\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        176
+      ],
+      "id": "58334d72-455f-4b5e-ab3a-d74833c943bf",
+      "name": "Structured Output Parser",
+      "notesInFlow": false,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1neO7uoHK6C4Z0fMe2pIdQIBSvfYT4WNC0HpvAZg5QyA",
+          "mode": "list",
+          "cachedResultName": "n8n_example",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1neO7uoHK6C4Z0fMe2pIdQIBSvfYT4WNC0HpvAZg5QyA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "גיליון1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1neO7uoHK6C4Z0fMe2pIdQIBSvfYT4WNC0HpvAZg5QyA/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name ": "={{ $('On form submission').item.json['שם מלא'] }}",
+            " Email ": "={{ $('On form submission').item.json['אימייל'] }}",
+            "Service ": "={{ $('On form submission').item.json['במה נוכל לעזור?'] }}",
+            "Summary ": "={{ $json.output.summary }}",
+            "Score": "={{ $json.output.score }}",
+            "Insight ": "={{ $json.output.insight }}",
+            "Suggested Reply": "={{ $json.output.suggested_reply }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name ",
+              "displayName": "Name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": " Email ",
+              "displayName": " Email ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Service ",
+              "displayName": "Service ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Summary ",
+              "displayName": "Summary ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Insight ",
+              "displayName": "Insight ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Suggested Reply",
+              "displayName": "Suggested Reply",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        672,
+        -48
+      ],
+      "id": "5a44ed3b-82a3-42d3-9239-5d4b9c3e4fde",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "r74MU5WXyrchp5bi",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "09a0baba-f373-4335-a024-1f3628838f88",
+              "leftValue": "={{ $json.Score }}",
+              "rightValue": 7,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        896,
+        -48
+      ],
+      "id": "da58d9bb-9e5d-46c2-a828-950bc73d9b0f",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "chatId": "1348094923",
+        "text": "=🚀 ליד חדש ואיכותי הגיע! 👤 \nשם: {{ $node[\"On form submission\"].json[\"שם מלא\"] }} \n📊 ציון: {{ $node[\"AI Agent\"].json.output.score }}\n📝 סיכום: {{ $node[\"AI Agent\"].json.output.summary }} \n💬 תשובה מוצעת: {{ $node[\"AI Agent\"].json.output.suggested_reply }}\nאימייל ליצירת קשר : {{ $json[' Email '] }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1120,
+        -48
+      ],
+      "id": "ac44ae5a-6501-4409-9f79-c61c85f0b8bf",
+      "name": "Send a text message",
+      "webhookId": "abe9dd57-69c9-4e13-aeb0-fb43c1246fed",
+      "credentials": {
+        "telegramApi": {
+          "id": "qcP2fzdGQ7QPhyQ1",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "f72cbf10-fce7-4a30-8c67-7f2c330feec1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e955fd29dea201a167e4c23395028e0c6a345c018f801458f303e4affb085fb1"
+  },
+  "id": "5WQCk5PK4W60zC1R",
+  "tags": []
+}
