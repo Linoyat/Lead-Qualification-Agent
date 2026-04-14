@@ -31,6 +31,8 @@
 החלק האהוב עליי: הגדרתי פילטר שבודק אם הליד קיבל ציון 7 ומעלה. אם כן, נשלחת התראה מידית לטלגרם עם כל הפרטים והתשובה המוכנה. ככה המכירות יודעים לקפוץ על הלידים הכי חמים תוך שניות.
 
 ---
+<img width="2880" height="1704" alt="image" src="https://github.com/user-attachments/assets/2771a087-6b57-4e70-aa01-421685ea51ac" />
+<img width="1042" height="1502" alt="image" src="https://github.com/user-attachments/assets/16c3c930-9b3d-43b7-bf5f-42d7a981bc5c" />
 
 ## 📝 סיכום ושיפורים לעתיד
 
