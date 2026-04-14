@@ -7,7 +7,7 @@
 
 ---
 
-## 🛠️ איך המכונה הזו עובדת?
+## 🛠️ איך זה עובד?
 
 ### 📝 שלב 1: הקליטה (Form Trigger)
 הכל מתחיל בטופס ייעוץ (n8n Form). הלקוח ממלא פרטים, בוחר שירות (ניהול לידים, סוכן וואטסאפ וכו') ומסביר מה הוא צריך.
@@ -33,6 +33,8 @@
 ---
 <img width="2880" height="1704" alt="image" src="https://github.com/user-attachments/assets/2771a087-6b57-4e70-aa01-421685ea51ac" />
 <img width="1042" height="1502" alt="image" src="https://github.com/user-attachments/assets/16c3c930-9b3d-43b7-bf5f-42d7a981bc5c" />
+<img width="916" height="1104" alt="image" src="https://github.com/user-attachments/assets/3d9952f0-334c-40b5-8926-973399f723e0" />
+
 
 ## 📝 סיכום ושיפורים לעתיד
 
